@@ -93,12 +93,14 @@ export default function Home() {
                 position: "relative", overflow: "hidden", padding: 32, minHeight: 220,
                 borderRadius: theme.radius.lg, background: c.grad, color: "#0D0D0D",
                 display: "flex", flexDirection: "column", justifyContent: "space-between", cursor: "pointer",
+                boxShadow: "0 12px 32px rgba(0,0,0,0.15)",
+                transition: theme.transition,
               }}>
                 <div style={{ fontSize: 64 }}>{c.emoji}</div>
                 <div>
                   <div style={{ fontFamily: theme.fonts.heading, fontSize: 24, fontWeight: 700 }}>{c.title}</div>
-                  <div style={{ marginTop: 6, opacity: 0.8, fontSize: 14 }}>{c.desc}</div>
-                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 14 }}>
+                  <div style={{ marginTop: 6, opacity: 0.8, fontSize: 13 }}>{c.desc}</div>
+                  <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 6, fontWeight: 700, fontSize: 13 }}>
                     Explore <ArrowRight size={16} />
                   </div>
                 </div>
@@ -111,33 +113,156 @@ export default function Home() {
       {/* BESTSELLERS */}
       <section style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 24px 60px" }}>
         <SectionHeader eyebrow="LOVED BY ALL" title="Bestsellers" />
-        <div className="ss-noscrollbar" style={{ display: "flex", gap: 18, overflowX: "auto", paddingBottom: 8 }}>
-          {[...FOODS.slice(0, 4), ...SPICES.slice(0, 4)].map((p) => {
-            const isFood = !p.tiers;
-            const price = isFood ? p.price : p.tiers[0].price;
-            return (
-              <div key={p.id} className="ss-hover-scale" style={{
-                minWidth: 240, flex: "0 0 240px", borderRadius: theme.radius.lg, overflow: "hidden",
-                background: theme.colors.surface, border: `1px solid ${theme.colors.border}`,
-              }}>
-                <div style={{ height: 140, fontSize: 72, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft }}>{p.emoji}</div>
-                <div style={{ padding: 16 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 4, color: theme.colors.accent, fontSize: 12 }}>
-                    <Star size={12} fill="currentColor" /> {p.rating}
+        <style>{`
+          @keyframes scrollLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .bestsellers-scroll-container:hover .bestsellers-inner {
+            animation-play-state: paused;
+          }
+          .bestsellers-inner {
+            animation: scrollLeft 30s linear infinite;
+          }
+        `}</style>
+        <div className="bestsellers-scroll-container" style={{ display: "flex", gap: 18, overflow: "hidden", position: "relative" }}>
+          <div className="bestsellers-inner" style={{ display: "flex", gap: 18, paddingBottom: 8 }}>
+            {[...FOODS.slice(0, 4), ...SPICES.slice(0, 4), ...FOODS.slice(0, 4), ...SPICES.slice(0, 4)].map((p, idx) => {
+              const isFood = !p.tiers;
+              const price = isFood ? p.price : p.tiers[0].price;
+              return (
+                <div key={`${p.id}-${idx}`} className="ss-hover-scale" style={{
+                  minWidth: 260, flex: "0 0 260px", borderRadius: theme.radius.lg, overflow: "hidden",
+                  background: theme.colors.surface, border: `1px solid ${theme.colors.border}`,
+                  boxShadow: "0 8px 24px rgba(76,175,80,0.08)",
+                  transition: theme.transition,
+                }}>
+                  <div style={{ height: 160, fontSize: 72, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft }}>{p.emoji}</div>
+                  <div style={{ padding: 16 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, color: theme.colors.accent, fontSize: 11 }}>
+                      <Star size={12} fill="currentColor" /> {p.rating}
+                    </div>
+                    <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 15, marginTop: 6, color: "#1A1A1A", lineHeight: 1.3 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: theme.colors.textDim, marginTop: 6, lineHeight: 1.4, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                      {p.description || "Premium quality product"}
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                      <span style={{ fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent, fontSize: 14 }}>{fmtPrice(price)}</span>
+                      <Button size="sm" onClick={() => addItem({
+                        key: `${p.id}-${isFood ? "default" : p.tiers[0].weight}`,
+                        productId: p.id, name: p.name, price, emoji: p.emoji,
+                        variant: isFood ? null : p.tiers[0].weight,
+                      })}>Add</Button>
+                    </div>
                   </div>
-                  <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 16, marginTop: 6 }}>{p.name}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* FOOD DELIVERED BY YUBI FOODS */}
+      <section style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 24px" }}>
+        <SectionHeader eyebrow="FRESH & READY" title="Food Delivered by YUBI Foods" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 20 }}>
+          {FOODS.slice(0, 8).map((p) => (
+            <Link key={p.id} to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <div className="ss-hover-scale" style={{
+                borderRadius: theme.radius.lg, overflow: "hidden",
+                background: theme.colors.surface, border: `1px solid ${theme.colors.border}`,
+                boxShadow: "0 8px 24px rgba(76,175,80,0.08)",
+                transition: theme.transition,
+                cursor: "pointer",
+              }}>
+                <div style={{ height: 140, fontSize: 64, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft }}>{p.emoji}</div>
+                <div style={{ padding: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, color: theme.colors.accent, fontSize: 11 }}>
+                    <Star size={11} fill="currentColor" /> {p.rating}
+                  </div>
+                  <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 14, marginTop: 6, color: "#1A1A1A" }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: theme.colors.textDim, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>
+                    {p.description}
+                  </div>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
-                    <span style={{ fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent }}>{fmtPrice(price)}</span>
-                    <Button size="sm" onClick={() => addItem({
-                      key: `${p.id}-${isFood ? "default" : p.tiers[0].weight}`,
-                      productId: p.id, name: p.name, price, emoji: p.emoji,
-                      variant: isFood ? null : p.tiers[0].weight,
-                    })}>Add</Button>
+                    <span style={{ fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent, fontSize: 12 }}>{fmtPrice(p.price)}</span>
+                    <Button size="sm" onClick={(e) => { e.preventDefault(); addItem({ key: p.id, productId: p.id, name: p.name, price: p.price, emoji: p.emoji }); }}>Add</Button>
                   </div>
                 </div>
               </div>
-            );
-          })}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* SPICES DELIVERED BY YUBI SPICES */}
+      <section style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 24px" }}>
+        <SectionHeader eyebrow="PURE & AROMATIC" title="Spices Delivered by YUBI Spices" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 20 }}>
+          {SPICES.slice(0, 8).map((p) => (
+            <Link key={p.id} to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <div className="ss-hover-scale" style={{
+                borderRadius: theme.radius.lg, overflow: "hidden",
+                background: theme.colors.surface, border: `1px solid ${theme.colors.border}`,
+                boxShadow: "0 8px 24px rgba(76,175,80,0.08)",
+                transition: theme.transition,
+                cursor: "pointer",
+              }}>
+                <div style={{ height: 140, fontSize: 64, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft }}>{p.emoji}</div>
+                <div style={{ padding: 14 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, color: theme.colors.accent, fontSize: 11 }}>
+                    <Star size={11} fill="currentColor" /> {p.rating}
+                  </div>
+                  <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 14, marginTop: 6, color: "#1A1A1A" }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: theme.colors.textDim, marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>
+                    {p.description}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                    <span style={{ fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent, fontSize: 12 }}>{fmtPrice(p.tiers[0].price)}</span>
+                    <Button size="sm" onClick={(e) => { e.preventDefault(); addItem({ key: p.id, productId: p.id, name: p.name, price: p.tiers[0].price, emoji: p.emoji, variant: p.tiers[0].weight }); }}>Add</Button>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* INSPIRATION FOR FIRST ORDER - FOODS */}
+      <section style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 24px" }}>
+        <SectionHeader eyebrow="GET STARTED" title="Inspiration for your first order (Foods)" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 20 }}>
+          {FOODS.slice(0, 6).map((p) => (
+            <Link key={p.id} to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <Card>
+                <div style={{ height: 120, fontSize: 56, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft, borderRadius: theme.radius.md }}>{p.emoji}</div>
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 14, color: "#1A1A1A" }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: theme.colors.textDim, marginTop: 4 }}>⭐ {p.rating}</div>
+                  <div style={{ marginTop: 10, fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent }}>{fmtPrice(p.price)}</div>
+                </div>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* INSPIRATION FOR FIRST ORDER - SPICES */}
+      <section style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 24px" }}>
+        <SectionHeader eyebrow="FLAVOR ESSENTIALS" title="Inspiration for your first order of Spices" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 20 }}>
+          {SPICES.slice(0, 6).map((p) => (
+            <Link key={p.id} to={`/product/${p.id}`} style={{ textDecoration: "none" }}>
+              <Card>
+                <div style={{ height: 120, fontSize: 56, display: "flex", alignItems: "center", justifyContent: "center", background: theme.gradientSoft, borderRadius: theme.radius.md }}>{p.emoji}</div>
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontFamily: theme.fonts.heading, fontWeight: 600, fontSize: 14, color: "#1A1A1A" }}>{p.name}</div>
+                  <div style={{ fontSize: 11, color: theme.colors.textDim, marginTop: 4 }}>⭐ {p.rating}</div>
+                  <div style={{ marginTop: 10, fontFamily: theme.fonts.mono, fontWeight: 700, color: theme.colors.accent }}>{fmtPrice(p.tiers[0].price)}</div>
+                </div>
+              </Card>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -152,10 +277,10 @@ export default function Home() {
             { n: "04", t: "Enjoy", d: "Fresh, premium, delivered with care", icon: <Star /> },
           ].map((s, i) => (
             <Card key={s.n} className="ss-fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-              <div style={{ fontFamily: theme.fonts.mono, fontSize: 13, color: theme.colors.accent, marginBottom: 14 }}>{s.n}</div>
+              <div style={{ fontFamily: theme.fonts.mono, fontSize: 12, color: theme.colors.accent, marginBottom: 14 }}>{s.n}</div>
               <div style={{ width: 48, height: 48, borderRadius: 12, background: theme.gradientSoft, display: "flex", alignItems: "center", justifyContent: "center", color: theme.colors.accent, marginBottom: 16 }}>{s.icon}</div>
-              <div style={{ fontFamily: theme.fonts.heading, fontSize: 18, fontWeight: 600 }}>{s.t}</div>
-              <div style={{ color: theme.colors.textDim, fontSize: 14, marginTop: 6 }}>{s.d}</div>
+              <div style={{ fontFamily: theme.fonts.heading, fontSize: 17, fontWeight: 600 }}>{s.t}</div>
+              <div style={{ color: theme.colors.textDim, fontSize: 13, marginTop: 6 }}>{s.d}</div>
             </Card>
           ))}
         </div>
@@ -171,7 +296,7 @@ export default function Home() {
           <h2 style={{ fontFamily: theme.fonts.heading, fontSize: "clamp(28px, 4vw, 44px)", margin: "12px 0 8px", color: "#0D0D0D" }}>
             20% OFF on First Order
           </h2>
-          <div style={{ marginBottom: 20 }}>Use code <strong>FIRST</strong> at checkout</div>
+          <div style={{ marginBottom: 20, fontSize: 14 }}>Use code <strong>FIRST</strong> at checkout</div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
             {[["HRS", cd.h], ["MIN", cd.m], ["SEC", cd.s]].map(([l, v]) => (
               <div key={l} style={{ background: "rgba(0,0,0,0.15)", padding: "12px 20px", borderRadius: 12, minWidth: 80 }}>
@@ -196,11 +321,11 @@ export default function Home() {
               <div style={{ display: "flex", gap: 4, color: theme.colors.accent }}>
                 {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
               </div>
-              <p style={{ marginTop: 14, color: theme.colors.text, lineHeight: 1.6, fontSize: 15 }}>"{t.text}"</p>
+              <p style={{ marginTop: 14, color: theme.colors.text, lineHeight: 1.6, fontSize: 14 }}>"{t.text}"</p>
               <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 40, height: 40, borderRadius: "50%", background: theme.gradientSoft, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{t.emoji}</div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 14 }}>{t.name}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13 }}>{t.name}</div>
                   <div style={{ fontSize: 12, color: theme.colors.textDim }}>{t.role}</div>
                 </div>
               </div>

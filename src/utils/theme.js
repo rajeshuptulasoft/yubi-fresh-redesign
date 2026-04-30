@@ -20,8 +20,8 @@ export const theme = {
     border: "#D6E8D6",
   },
   fonts: {
-    heading: "'Cormorant Garamond', Georgia, serif",
-    body: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+    heading: "'Poppins', 'Inter', system-ui, -apple-system, sans-serif",
+    body: "'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
     mono: "'JetBrains Mono', ui-monospace, monospace",
   },
   // Primary brand gradient (green) — used as default `gradient`

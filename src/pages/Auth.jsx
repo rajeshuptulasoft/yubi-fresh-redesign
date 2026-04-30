@@ -6,26 +6,104 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL || "https://www.yubi.co.in/api/";
+
 export default function Auth() {
   const { signIn, signUp } = useAuth();
   const nav = useNavigate();
   const [mode, setMode] = useState("signin");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({ email: "", password: "", fullName: "", phone: "", role: "customer" });
+
+  const handleUserLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    
+    console.log("Starting login attempt with email:", form.email);
+    console.log("POST request to:", `${BASE_URL}food/login`);
+    
+    try {
+      const apiResponse = await fetch(`${BASE_URL}food/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      const response = await apiResponse.json();
+      
+      if (apiResponse.ok && response?.token) {
+        console.log("Login Success Response:", response);
+        const userData = {
+          id: response.id,
+          email: response.email,
+          name: response.name,
+          phone: response.phone,
+          token: response.token,
+          role: response.role || "customer",
+        };
+        localStorage.setItem("yubiUser", JSON.stringify(userData));
+        console.log("SUCCESS: User login successful");
+        console.log("User Data:", userData);
+        console.log("Token stored in localStorage");
+        
+        toast.success(`Welcome back, ${response.name}!`);
+        
+        // Clear form and error on success
+        setForm({ email: "", password: "", fullName: "", phone: "", role: "customer" });
+        setError("");
+        setLoading(false);
+        
+        // Navigate to home after successful login
+        setTimeout(() => {
+          nav("/home");
+        }, 1000);
+      } else {
+        console.log("Login Error Response:", response);
+        throw new Error("No token received from server");
+      }
+    } catch (error) {
+      console.log("Login Error:", error);
+      
+      let errorMessage = error.message || "Login failed. Please check your credentials.";
+
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setLoading(false);
+    }
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if (mode === "signup") {
-      const { error } = await signUp(form);
-      if (error) toast.error(error.message);
-      else { toast.success("Welcome to Saffron & Sage!"); nav("/"); }
+    
+    if (mode === "signin") {
+      // Use axios-based API for user login
+      await handleUserLogin(e);
     } else {
-      const { error } = await signIn({ email: form.email, password: form.password });
-      if (error) toast.error(error.message);
-      else { toast.success("Welcome back!"); nav("/"); }
+      // Keep signup with existing auth context (optional)
+      try {
+        const { error } = await signUp(form);
+        if (error) {
+          toast.error(error.message);
+        } else {
+          toast.success("Account created successfully! Please sign in.");
+          setMode("signin");
+          setForm({ ...form, password: "" });
+        }
+      } catch (err) {
+        toast.error("Sign up failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+      return;
     }
-    setLoading(false);
   };
 
   return (
@@ -68,16 +146,49 @@ export default function Auth() {
               </div>
             </>
           )}
-          <Input type="email" placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-          <Input type="password" placeholder="Password (min 6 characters)" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
-          <Button type="submit" size="lg" disabled={loading} style={{ marginTop: 8 }}>
+          <Input 
+            type="email" 
+            placeholder="Email" 
+            value={form.email} 
+            onChange={(e) => {
+              setForm({ ...form, email: e.target.value });
+              setError("");
+            }} 
+            required 
+          />
+          <Input 
+            type="password" 
+            placeholder="Password (min 6 characters)" 
+            value={form.password} 
+            onChange={(e) => {
+              setForm({ ...form, password: e.target.value });
+              setError("");
+            }} 
+            required 
+            minLength={6} 
+          />
+          {error && mode === "signin" && (
+            <div style={{
+              padding: 12,
+              borderRadius: 8,
+              background: "rgba(220, 38, 38, 0.1)",
+              border: "1px solid #dc2626",
+              color: "#dc2626",
+              fontSize: 13,
+              fontFamily: theme.fonts.body,
+              marginTop: 8
+            }}>
+              ❌ {error}
+            </div>
+          )}
+          <Button type="submit" size="lg" disabled={loading} style={{ marginTop: error ? 12 : 8 }}>
             {loading ? "Please wait..." : mode === "signin" ? "Sign In" : "Create Account"}
           </Button>
         </form>
 
         <div style={{ textAlign: "center", marginTop: 20, color: theme.colors.textDim, fontSize: 14 }}>
           {mode === "signin" ? "New here?" : "Already have an account?"}{" "}
-          <button onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+          <button onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(""); }}
             style={{ background: "none", border: "none", color: theme.colors.accent, cursor: "pointer", fontWeight: 600, fontFamily: theme.fonts.body }}>
             {mode === "signin" ? "Sign up" : "Sign in"}
           </button>
