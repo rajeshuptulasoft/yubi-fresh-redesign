@@ -1,33 +1,42 @@
-// Centralized theme + helper style tokens (used inline across the app)
+// YUBI — centralized light theme tokens (used inline across the app)
 export const theme = {
   colors: {
-    bg: "#0D0D0D",
-    surface: "#1A1A1A",
-    surfaceAlt: "#141414",
-    accent: "#F4A623",
-    accent2: "#E85D04",
-    text: "#FFFFFF",
-    textDim: "#A0A0A0",
-    success: "#22C55E",
-    error: "#EF4444",
-    border: "#2A2A2A",
+    // Surfaces
+    bg: "#FFFFFF",
+    surface: "#F9FBF9",
+    surfaceAlt: "#F1F8F1",
+    // Brand
+    primary: "#4CAF50",
+    primaryDark: "#388E3C",
+    primaryLight: "#A5D6A7",
+    accent: "#FF6F00",      // amber CTAs (kept name for back-compat)
+    accent2: "#FF8F00",
+    // Text
+    text: "#1A2E1A",
+    textDim: "#5C7A5C",
+    // States
+    success: "#2E7D32",
+    error: "#D32F2F",
+    border: "#D6E8D6",
   },
   fonts: {
-    heading: "'Playfair Display', Georgia, serif",
-    body: "'DM Sans', system-ui, -apple-system, sans-serif",
-    mono: "'Space Mono', ui-monospace, monospace",
+    heading: "'Cormorant Garamond', Georgia, serif",
+    body: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
+    mono: "'JetBrains Mono', ui-monospace, monospace",
   },
-  gradient: "linear-gradient(135deg, #F4A623 0%, #E85D04 100%)",
-  gradientSoft: "linear-gradient(135deg, rgba(244,166,35,0.15) 0%, rgba(232,93,4,0.15) 100%)",
-  shadow: "0 10px 40px -10px rgba(244, 166, 35, 0.35)",
-  shadowSoft: "0 8px 30px rgba(0,0,0,0.4)",
+  // Primary brand gradient (green) — used as default `gradient`
+  gradient: "linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)",
+  gradientAccent: "linear-gradient(135deg, #FF6F00 0%, #FF8F00 100%)",
+  gradientSoft: "linear-gradient(135deg, rgba(76,175,80,0.12) 0%, rgba(56,142,60,0.12) 100%)",
+  shadow: "0 10px 30px -10px rgba(76, 175, 80, 0.35)",
+  shadowSoft: "0 8px 24px rgba(76, 175, 80, 0.12)",
   glass: {
-    background: "rgba(26, 26, 26, 0.6)",
+    background: "rgba(255, 255, 255, 0.85)",
     backdropFilter: "blur(20px) saturate(180%)",
     WebkitBackdropFilter: "blur(20px) saturate(180%)",
-    border: "1px solid rgba(244, 166, 35, 0.12)",
+    border: "1px solid rgba(76, 175, 80, 0.18)",
   },
-  radius: { sm: "8px", md: "12px", lg: "16px", xl: "24px", pill: "999px" },
+  radius: { sm: "10px", md: "14px", lg: "20px", xl: "24px", pill: "999px" },
   transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
 };
 
