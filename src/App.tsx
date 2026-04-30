@@ -1,24 +1,83 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
+import { NotificationProvider } from "@/context/NotificationContext";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+import Home from "@/pages/user/Home";
+import Menu from "@/pages/user/Menu";
+import SpiceStore from "@/pages/user/SpiceStore";
+import Cart from "@/pages/user/Cart";
+import Checkout from "@/pages/user/Checkout";
+import OrderTracking from "@/pages/user/OrderTracking";
+import OrderHistory from "@/pages/user/OrderHistory";
+import Profile from "@/pages/user/Profile";
+import Auth from "@/pages/Auth";
+import NotFound from "@/pages/NotFound";
+
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminOrders from "@/pages/admin/AdminOrders";
+import AdminAssignDelivery from "@/pages/admin/AdminAssignDelivery";
+import AdminProducts from "@/pages/admin/AdminProducts";
+import AdminDeliveryPartners from "@/pages/admin/AdminDeliveryPartners";
+
+import DeliveryDashboard from "@/pages/delivery/DeliveryDashboard";
+import ActiveDelivery from "@/pages/delivery/ActiveDelivery";
+import DeliveryHistory from "@/pages/delivery/DeliveryHistory";
 
 const queryClient = new QueryClient();
+
+function Shell() {
+  const loc = useLocation();
+  const hideChrome = loc.pathname === "/auth";
+  return (
+    <>
+      {!hideChrome && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/spices" element={<SpiceStore />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+        <Route path="/track/:orderId" element={<ProtectedRoute><OrderTracking /></ProtectedRoute>} />
+        <Route path="/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
+        <Route path="/admin" element={<ProtectedRoute allow={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/orders" element={<ProtectedRoute allow={["admin"]}><AdminOrders /></ProtectedRoute>} />
+        <Route path="/admin/assign/:orderId" element={<ProtectedRoute allow={["admin"]}><AdminAssignDelivery /></ProtectedRoute>} />
+        <Route path="/admin/products" element={<ProtectedRoute allow={["admin"]}><AdminProducts /></ProtectedRoute>} />
+        <Route path="/admin/delivery-partners" element={<ProtectedRoute allow={["admin"]}><AdminDeliveryPartners /></ProtectedRoute>} />
+
+        <Route path="/delivery" element={<ProtectedRoute allow={["delivery_partner"]}><DeliveryDashboard /></ProtectedRoute>} />
+        <Route path="/delivery/active" element={<ProtectedRoute allow={["delivery_partner"]}><ActiveDelivery /></ProtectedRoute>} />
+        <Route path="/delivery/history" element={<ProtectedRoute allow={["delivery_partner"]}><DeliveryHistory /></ProtectedRoute>} />
+
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      {!hideChrome && <Footer />}
+    </>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
+      <Sonner position="top-right" theme="dark" richColors />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <CartProvider>
+            <NotificationProvider>
+              <Shell />
+            </NotificationProvider>
+          </CartProvider>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
