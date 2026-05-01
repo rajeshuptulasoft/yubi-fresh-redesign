@@ -36,11 +36,23 @@ export function BannerSlider({ items = banners }) {
   </section>;
 }
 
-export function CategoryImageSection({ title = "Categories", items, titleInCard = false }) {
+export function CategoryImageSection({ title = "Categories", items, titleInCard = false, titleRight }) {
   const { width } = useWindowSize();
   const columns = width <= 768 ? "repeat(2, minmax(0, 1fr))" : width <= 1024 ? "repeat(3, minmax(0, 1fr))" : "repeat(5, minmax(0, 1fr))";
   return <section style={{ padding: width <= 768 ? "28px 16px" : "60px 40px", maxWidth: 1280, margin: "0 auto" }}>
-    {titleInCard ? <div className="category-section-title-card"><h2 style={{ ...heading, margin: 0 }}>{title}</h2></div> : <h2 style={heading}>{title}</h2>}
+    {titleInCard
+      ? <div className="category-section-title-card">
+        <div className="category-section-title-copy">
+          <h2 style={{ ...heading, margin: 0 }}>{title}</h2>
+        </div>
+        <div className="category-section-title-media">
+          {titleRight}
+        </div>
+      </div>
+      : <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 22 }}>
+        <h2 style={{ ...heading, margin: 0 }}>{title}</h2>
+        {titleRight}
+      </div>}
     <div style={{ display: "grid", gridTemplateColumns: columns, gap: 16 }}>
       {items.map((item) => <Link key={item.name} to={item.route || "#"} className="category-image-card">
         <div className="category-image-card__media"><img src={item.image} alt={item.name} /></div>

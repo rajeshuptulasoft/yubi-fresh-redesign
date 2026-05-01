@@ -585,16 +585,57 @@ img {
 
 /* Home: category section title as card */
 .category-section-title-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   background: #ffffff;
   border: 1px solid #d6e8d6;
   border-radius: 14px;
   padding: 16px 20px;
   margin-bottom: 18px;
+  height: 92px;
+  overflow: hidden;
   box-shadow: 0 8px 24px rgba(26, 46, 26, 0.08);
 }
 
 .category-section-title-card h2 {
   margin: 0;
+}
+
+.category-section-title-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.category-section-title-media {
+  align-self: stretch;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.spice-category-truck-track {
+  width: 260px;
+  height: 100%;
+  overflow: hidden;
+  flex: 0 0 260px;
+  display: flex;
+  align-items: center;
+}
+
+.spice-category-truck {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  animation: spiceTruckDrive 5.6s linear infinite;
+}
+
+@keyframes spiceTruckDrive {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(260px); }
 }
 
 .category-image-card {

@@ -2,6 +2,7 @@
 import { products } from "../../data";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import homeBanner2 from "../../assets/homebanner2.jpg.jpeg";
+import yubiTruck from "../../assets/Yubi Truck 4 png.png";
 
 const spiceBanners = [
   { id: 1, headline: "Authentic Spices from the Farm", subheadline: "Fresh, fragrant and carefully sourced", cta: "Shop Spices", route: "/spices", image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1600&auto=format&fit=crop" },
@@ -20,7 +21,12 @@ export default function HomeSpices() {
   ];
   return <main style={{ background: "#FFFFFF", color: colors.text }}>
     <BannerSlider items={spiceBanners} />
-    <CategoryImageSection title="Spice Categories" items={buildCategoryItems(spiceGroups, "/spices")} titleInCard />
+    <CategoryImageSection
+      title="Spice Categories"
+      items={buildCategoryItems(spiceGroups, "/spices")}
+      titleInCard
+      titleRight={<div className="spice-category-truck-track"><img src={yubiTruck} alt="YUBI delivery truck" className="spice-category-truck" /></div>}
+    />
     <ProductGridSection title="Popular Spices" items={spices} />
     <section style={{ padding: width <= 768 ? "28px 16px" : "28px 40px", maxWidth: 1280, margin: "0 auto" }}>
       <div style={{ display: "grid", gap: 22 }}>
