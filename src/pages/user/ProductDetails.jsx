@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Minus, Plus, Star } from "lucide-react";
+import { ArrowLeft, Minus, Plus, ShoppingCart, Star } from "lucide-react";
 import { products } from "../../data";
 import { useCart } from "../../context/CartContext";
 import { useWindowSize } from "../../hooks/useWindowSize";
@@ -9,6 +9,14 @@ const reviews = [
   { id: 1, name: "Rohit S.", rating: 5, text: "Great quality and very fresh. Exactly as described." },
   { id: 2, name: "Aditi R.", rating: 4, text: "Packaging was neat and delivery was quick." },
   { id: 3, name: "Karan P.", rating: 5, text: "Will definitely order again. Value for money." }
+];
+
+const ratingBreakdown = [
+  { stars: 5, percent: 78 },
+  { stars: 4, percent: 16 },
+  { stars: 3, percent: 4 },
+  { stars: 2, percent: 1 },
+  { stars: 1, percent: 1 },
 ];
 
 export default function ProductDetails() {
@@ -32,8 +40,14 @@ export default function ProductDetails() {
     
     <section style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.1fr", gap: 40, alignItems: "start", marginBottom: 40 }}>
       {/* IMAGE SECTION */}
-      <div style={{ background: "#FFFFFF", borderRadius: 20, border: "1px solid #E8F0E8", boxShadow: "0 16px 40px rgba(26,46,26,0.08)", padding: 24, position: "sticky", top: 100 }}>
+      <div style={{ background: "#FFFFFF", borderRadius: 20, border: "1px solid #E8F0E8", boxShadow: "0 16px 40px rgba(26,46,26,0.08)", padding: 24, position: isMobile ? "relative" : "sticky", top: 100 }}>
         <img src={product.image} alt={product.name} style={{ width: "100%", maxHeight: 520, objectFit: "contain", display: "block" }} />
+        <div style={{ marginTop: 20, padding: 18, borderRadius: 16, background: "linear-gradient(135deg,#F1F8F1,#FFFFFF)", border: "1px solid #D6E8D6" }}>
+          <h3 style={{ margin: "0 0 8px", color: "#1A2E1A", fontSize: 18 }}>Freshness you can see</h3>
+          <p style={{ margin: 0, color: "#5C7A5C", lineHeight: 1.65, fontSize: 13 }}>
+            Every YUBI product is selected for consistent aroma, texture, and daily kitchen reliability. We pack carefully so the product reaches you clean, fresh, and ready to use.
+          </p>
+        </div>
       </div>
 
       {/* DETAILS SECTION */}
@@ -124,11 +138,12 @@ export default function ProductDetails() {
         </div>
 
         {/* Add to Cart Button */}
-        <button 
+        <button
+          className="standard-add-btn"
           onClick={() => addItem({ key: `${product.id}-${Date.now()}`, productId: product.id, name: product.name, price: basePrice, image: product.image, quantity: qty })} 
           style={{ ...cta, width: "100%", padding: 16, fontSize: 15 }}
         >
-          Add to Cart
+          <ShoppingCart size={18} /> Add to Cart
         </button>
 
         {/* Additional Info */}
@@ -145,6 +160,24 @@ export default function ProductDetails() {
     {/* REVIEWS SECTION */}
     <section style={{ marginTop: 60, background: "#FFFFFF", borderRadius: 20, border: "1px solid #E8F0E8", padding: isMobile ? 20 : 32 }}>
       <h2 style={{ marginTop: 0, marginBottom: 24, color: "#1A2E1A", fontSize: 26, fontWeight: 700 }}>Customer Reviews</h2>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "280px 1fr", gap: 24, alignItems: "center", marginBottom: 26 }}>
+        <div style={{ background: "#F1F8F1", border: "1px solid #C8E6C9", borderRadius: 18, padding: 22, textAlign: "center" }}>
+          <div style={{ fontSize: 52, lineHeight: 1, fontWeight: 900, color: "#1A2E1A" }}>{product.rating || 4.7}</div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 3, color: "#FF6F00", margin: "10px 0" }}>{[...Array(5)].map((_, index) => <Star key={index} size={17} fill="currentColor" />)}</div>
+          <div style={{ color: "#5C7A5C", fontWeight: 800, fontSize: 13 }}>{product.reviews || 100}+ verified ratings</div>
+        </div>
+        <div style={{ display: "grid", gap: 10 }}>
+          {ratingBreakdown.map((row) => (
+            <div key={row.stars} style={{ display: "grid", gridTemplateColumns: "54px 1fr 42px", alignItems: "center", gap: 12 }}>
+              <span style={{ color: "#1A2E1A", fontWeight: 900, fontSize: 13 }}>{row.stars} Star</span>
+              <div style={{ height: 10, borderRadius: 999, background: "#E8F5E9", overflow: "hidden" }}>
+                <div style={{ width: `${row.percent}%`, height: "100%", borderRadius: 999, background: "linear-gradient(90deg,#4CAF50,#A8E063)", animation: "ratingFill 0.8s ease both" }} />
+              </div>
+              <span style={{ color: "#5C7A5C", fontWeight: 800, fontSize: 12 }}>{row.percent}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16 }}>
         {reviews.map((review) => (
           <div key={review.id} style={{ border: "1px solid #E5E7EB", borderRadius: 14, padding: 16, background: "#FCFFFC" }}>

@@ -33,14 +33,6 @@ export default function Home() {
         background: `linear-gradient(180deg, rgba(13,13,13,0.4) 0%, rgba(13,13,13,0.85) 60%, #0D0D0D 100%), url(${heroImg}) center/cover`,
         minHeight: 640,
       }}>
-        {/* floating spice particles */}
-        {["🌶️","✨","🟡","🌸","🪵","⚫"].map((e, i) => (
-          <div key={i} className="ss-float" style={{
-            position: "absolute", fontSize: 32, opacity: 0.25,
-            left: `${10 + i * 15}%`, top: `${15 + (i % 3) * 25}%`,
-            animationDelay: `${i * 0.8}s`, animationDuration: `${6 + i}s`,
-          }}>{e}</div>
-        ))}
         <div className="ss-fade-up" style={{ position: "relative", maxWidth: 1100, margin: "0 auto", textAlign: "center", paddingTop: 60 }}>
           <Badge color={theme.colors.accent} style={{ marginBottom: 20 }}>
             <Flame size={11} /> NEW SEASON · MONSOON SPECIALS
@@ -228,6 +220,8 @@ export default function Home() {
         </div>
       </section>
 
+      <SpiceStats />
+
       {/* INSPIRATION FOR FIRST ORDER - FOODS */}
       <section style={{ maxWidth: 1400, margin: "0 auto", padding: "60px 24px" }}>
         <SectionHeader eyebrow="GET STARTED" title="Inspiration for your first order (Foods)" />
@@ -343,5 +337,36 @@ function SectionHeader({ eyebrow, title }) {
       <div style={{ fontFamily: theme.fonts.mono, fontSize: 12, letterSpacing: 3, color: theme.colors.accent, marginBottom: 8 }}>{eyebrow}</div>
       <h2 style={{ fontFamily: theme.fonts.heading, fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 700, margin: 0 }}>{title}</h2>
     </div>
+  );
+}
+
+function SpiceStats() {
+  const stats = [
+    { value: "4.9", label: "Average Rating", sub: "from verified buyers" },
+    { value: "25K+", label: "Spice Orders", sub: "packed fresh monthly" },
+    { value: "18+", label: "Signature Blends", sub: "whole and ground spices" },
+    { value: "98%", label: "Repeat Customers", sub: "trusted kitchen staples" },
+  ];
+  return (
+    <section style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px 60px" }}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+        gap: 16,
+        background: "linear-gradient(135deg, #E8F5E9, #FFFFFF)",
+        border: "1px solid #C8E6C9",
+        borderRadius: 22,
+        padding: 24,
+        boxShadow: "0 18px 46px rgba(26,46,26,0.08)",
+      }}>
+        {stats.map((stat, index) => (
+          <div key={stat.label} className="home-stat-card" style={{ animationDelay: `${index * 90}ms` }}>
+            <div className="home-stat-card__value">{stat.value}</div>
+            <div className="home-stat-card__label">{stat.label}</div>
+            <div className="home-stat-card__sub">{stat.sub}</div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

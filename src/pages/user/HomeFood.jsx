@@ -1,9 +1,10 @@
 ﻿import { BannerSlider, CategoryImageSection, ProductCard, ProductGridSection, buildCategoryItems, colors, heading } from "./HomeSections";
 import { products } from "../../data";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import homeBanner from "../../assets/homebanner.jpg.jpeg";
 
 const foodBanners = [
-  { id: 1, headline: "Fresh Food Delivered Hot", subheadline: "Kitchen-fresh meals at your door", cta: "Order Food", route: "/menu", image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&auto=format&fit=crop" },
+  { id: 1, headline: "Fresh Food Delivered Hot", subheadline: "Kitchen-fresh meals at your door", cta: "Order Food", route: "/menu", image: homeBanner },
   { id: 2, headline: "Chef Crafted Daily", subheadline: "Comfort dishes, snacks and sweets", cta: "See Menu", route: "/menu", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1600&auto=format&fit=crop" },
   { id: 3, headline: "Lunch Sorted Fast", subheadline: "Quick delivery for busy days", cta: "Order Now", route: "/menu", image: "https://images.unsplash.com/photo-1543353071-873f17a7a088?w=1600&auto=format&fit=crop" }
 ];

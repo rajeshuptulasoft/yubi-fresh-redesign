@@ -1,6 +1,6 @@
 import { theme } from "@/utils/theme";
 
-export function Button({ children, variant = "primary", size = "md", style, ...props }) {
+export function Button({ children, variant = "primary", size = "md", style, className = "", ...props }) {
   const sizes = {
     sm: { padding: "8px 16px", fontSize: 14, height: 36 },
     md: { padding: "12px 22px", fontSize: 15, height: 44 },
@@ -17,7 +17,7 @@ export function Button({ children, variant = "primary", size = "md", style, ...p
   };
   return (
     <button
-      className="ss-hover-lift"
+      className={`ss-hover-lift ${variant === "primary" ? "standard-add-btn" : ""} ${className}`.trim()}
       style={{
         ...sizes[size],
         ...variants[variant],
@@ -144,7 +144,7 @@ export function Modal({ open, onClose, children, maxWidth = 500 }) {
       style={{
         position: "fixed", inset: 0, zIndex: 1000,
         background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
-        display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
+        padding: 16, overflowY: "auto",
       }}
     >
       <div
@@ -152,12 +152,16 @@ export function Modal({ open, onClose, children, maxWidth = 500 }) {
         className="ss-fade-up"
         style={{
           ...theme.glass,
+          position: "fixed",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
           background: "rgba(20,20,20,0.95)",
           border: `1px solid ${theme.colors.accent}33`,
           borderRadius: theme.radius.lg,
           padding: 28,
           maxWidth, width: "100%",
-          maxHeight: "90vh", overflow: "auto",
+          maxHeight: "90vh", overflow: "auto", scrollbarWidth: "none", msOverflowStyle: "none",
           boxShadow: "0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(244,166,35,0.1)",
         }}
       >

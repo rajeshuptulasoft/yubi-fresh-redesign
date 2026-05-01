@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { toast } from "sonner";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext(null);
 const STORAGE_KEY = "saffron_cart_v1";
@@ -41,12 +42,18 @@ function reducer(state, action) {
 
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, init);
+  const { user, openAuthModal, setShowAuthModal } = useAuth();
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
   const addItem = (item) => {
+    if (!user) {
+      if (openAuthModal) openAuthModal("login");
+      else setShowAuthModal(true);
+      return;
+    }
     dispatch({ type: "ADD", item });
     toast.success(`Added ${item.name}`, { description: item.variant || "" });
   };

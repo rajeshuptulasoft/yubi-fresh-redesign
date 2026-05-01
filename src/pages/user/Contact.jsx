@@ -1,7 +1,75 @@
-﻿import { useState } from "react";
-import { MapPin, Phone, Mail, Send } from "lucide-react";
-const green="#4CAF50", dark="#1A2E1A", text="#1A1A1A";
-export default function Contact(){const [form,setForm]=useState({name:"",email:"",phone:"",subject:"",message:""}); const [toast,setToast]=useState(""); const upd=(k,v)=>setForm(f=>({...f,[k]:v})); const submit=async(e)=>{e.preventDefault(); const emailjs=window.emailjs; if(emailjs?.send){await emailjs.send("service_yubi","template_contact",form,"public_key").catch(()=>null)} setToast("Message sent successfully! We'll reply soon. ✅"); setForm({name:"",email:"",phone:"",subject:"",message:""});}; return <main style={{background:"#FFFFFF",minHeight:"100vh",color:text,padding:"50px 20px"}}><div style={{maxWidth:1180,margin:"0 auto"}}><h1 style={{color:dark,fontSize:44,marginTop:0}}>Contact YUBI</h1><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16}}><Info icon={<MapPin/>} title="Address" value="D2/7, Rasulgarh Industrial Estate - 751010, Bhubaneswar, Odisha"/><Info icon={<Phone/>} title="Phone" value="+91 9439731691"/><Info icon={<Mail/>} title="Email" value="yubifoods@gmail.com"/></div><section style={{marginTop:42}}><p style={{color:dark,fontWeight:800,fontSize:18}}>Let's hear all about it! Get in touch</p><form onSubmit={submit} style={{background:"#FFFFFF",border:"1px solid #D6E8D6",borderRadius:8,padding:24,boxShadow:"0 3px 12px rgba(0,0,0,.06)"}}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:14}}><Field label="Full Name"><input required value={form.name} onChange={e=>upd("name",e.target.value)} style={input}/></Field><Field label="Email"><input required type="email" value={form.email} onChange={e=>upd("email",e.target.value)} style={input}/></Field><Field label="Phone"><input required value={form.phone} onChange={e=>upd("phone",e.target.value)} style={input}/></Field><Field label="Subject"><input required value={form.subject} onChange={e=>upd("subject",e.target.value)} style={input}/></Field></div><Field label="Message"><textarea required value={form.message} onChange={e=>upd("message",e.target.value)} style={{...input,minHeight:130}}/></Field><button style={{marginTop:14,width:"100%",background:green,color:"#FFFFFF",border:"none",borderRadius:8,padding:14,fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}><Send size={16}/>Send Message</button></form>{toast&&<div style={{position:"fixed",right:20,top:20,background:"#DCFCE7",color:dark,padding:"14px 18px",borderRadius:8,boxShadow:"0 4px 16px rgba(0,0,0,.15)",fontWeight:800}}>{toast}</div>}</section></div></main>}
-function Info({icon,title,value}){return <div style={{background:"#FFFFFF",border:"1px solid #D6E8D6",borderRadius:8,padding:22,color:text}}><div style={{color:green}}>{icon}</div><h3 style={{color:dark}}>{title}</h3><p>{value}</p></div>}
-function Field({label,children}){return <label style={{display:"block",color:dark,fontWeight:700,marginTop:12}}>{label}{children}</label>}
-const input={display:"block",width:"100%",boxSizing:"border-box",marginTop:6,padding:12,border:"1px solid #D6E8D6",borderRadius:8,color:text,background:"#FFFFFF"};
+import { useState } from "react";
+import { Clock, Mail, MapPin, Phone, Send, Sparkles } from "lucide-react";
+
+const supportImage = "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=900&auto=format&fit=crop";
+
+export default function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const [toast, setToast] = useState("");
+  const update = (key, value) => setForm((prev) => ({ ...prev, [key]: value }));
+
+  const submit = async (event) => {
+    event.preventDefault();
+    const emailjs = window.emailjs;
+    if (emailjs?.send) await emailjs.send("service_yubi", "template_contact", form, "public_key").catch(() => null);
+    setToast("Message sent successfully! We'll reply soon.");
+    setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+    window.setTimeout(() => setToast(""), 2600);
+  };
+
+  return (
+    <main className="contact-page">
+      <section className="contact-hero">
+        <div>
+          <span className="contact-eyebrow"><Sparkles size={15} /> YUBI Support</span>
+          <h1>Contact YUBI</h1>
+          <p>Questions about food, spices, orders, delivery, or wholesale? Our support desk is ready to help.</p>
+        </div>
+      </section>
+
+      <section className="contact-panel">
+        <div className="contact-support">
+          <div className="contact-support__image">
+            <img src={supportImage} alt="Customer support representative wearing headphones" />
+          </div>
+          <div>
+            <p className="contact-kicker">Let's hear all about it!</p>
+            <h2>Get in touch</h2>
+            <p>Tell us what you need and the YUBI team will route your request to the right person.</p>
+            <div className="contact-mini-list">
+              <span><Clock size={16} /> Typical reply within 24 hours</span>
+              <span><Phone size={16} /> Call support available</span>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={submit} className="contact-form">
+          <div className="contact-form__grid">
+            <Field label="Full Name"><input required value={form.name} onChange={(event) => update("name", event.target.value)} /></Field>
+            <Field label="Email"><input required type="email" value={form.email} onChange={(event) => update("email", event.target.value)} /></Field>
+            <Field label="Phone"><input required value={form.phone} onChange={(event) => update("phone", event.target.value)} /></Field>
+            <Field label="Subject"><input required value={form.subject} onChange={(event) => update("subject", event.target.value)} /></Field>
+          </div>
+          <Field label="Message"><textarea required value={form.message} onChange={(event) => update("message", event.target.value)} /></Field>
+          <button className="contact-submit"><Send size={17} /> Send Message</button>
+        </form>
+      </section>
+
+      <section className="contact-location">
+        <Info icon={<MapPin />} title="Address" value="D2/7, Rasulgarh Industrial Estate - 751010, Bhubaneswar, Odisha" />
+        <Info icon={<Phone />} title="Phone" value="+91 9439731691" />
+        <Info icon={<Mail />} title="Email" value="yubifoods@gmail.com" />
+      </section>
+
+      {toast && <div className="contact-toast">{toast}</div>}
+    </main>
+  );
+}
+
+function Info({ icon, title, value }) {
+  return <div className="contact-info-card"><div>{icon}</div><h3>{title}</h3><p>{value}</p></div>;
+}
+
+function Field({ label, children }) {
+  return <label className="contact-field"><span>{label}</span>{children}</label>;
+}

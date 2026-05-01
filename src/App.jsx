@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
@@ -16,6 +17,7 @@ export default function App() {
           <CartProvider>
             <NotificationProvider>
               <AppRoutes />
+              <Toaster richColors position="top-right" />
             </NotificationProvider>
           </CartProvider>
         </AuthProvider>

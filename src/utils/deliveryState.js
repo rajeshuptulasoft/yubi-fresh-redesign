@@ -1,0 +1,45 @@
+import { deliveryPartners } from "../data";
+
+const PARTNERS_KEY = "yubiDeliveryPartners";
+const USER_KEY = "yubiUser";
+
+export function getDeliveryPartners() {
+  try {
+    return JSON.parse(localStorage.getItem(PARTNERS_KEY) || "null") || deliveryPartners;
+  } catch {
+    return deliveryPartners;
+  }
+}
+
+export function saveDeliveryPartners(partners) {
+  localStorage.setItem(PARTNERS_KEY, JSON.stringify(partners));
+  window.dispatchEvent(new Event("yubiDeliveryPartnersUpdated"));
+}
+
+export function getCurrentDeliveryUser() {
+  try {
+    return JSON.parse(localStorage.getItem(USER_KEY) || "null");
+  } catch {
+    return null;
+  }
+}
+
+export function getCurrentDeliveryPartner() {
+  const user = getCurrentDeliveryUser();
+  const partners = getDeliveryPartners();
+  return partners.find((partner) => partner.id === user?.partnerId || partner.email === user?.email) || partners[0];
+}
+
+export function updateCurrentDeliveryPartnerStatus(isOnline) {
+  const current = getCurrentDeliveryPartner();
+  const nextStatus = isOnline ? (current.currentOrderId ? "On Delivery" : "Available") : "Offline";
+  const partners = getDeliveryPartners().map((partner) => (
+    partner.id === current.id ? { ...partner, status: nextStatus } : partner
+  ));
+  saveDeliveryPartners(partners);
+  return partners.find((partner) => partner.id === current.id);
+}
+
+export function isPartnerOnline(partner) {
+  return partner?.status !== "Offline";
+}

@@ -1,13 +1,14 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
-import { Star } from "lucide-react";
+import { ShoppingCart, Star } from "lucide-react";
 import { products, banners } from "../../data";
 import { useCart } from "../../context/CartContext";
 import { useWindowSize } from "../../hooks/useWindowSize";
 
 export const colors = { green: "#4CAF50", dark: "#1A2E1A", text: "#1A1A1A", border: "#D6E8D6" };
 export const heading = { color: colors.dark, fontSize: 34, margin: "0 0 22px", fontWeight: 800 };
-export const greenButton = { background: colors.green, color: "#FFFFFF", border: "none", borderRadius: 8, padding: "8px 12px", cursor: "pointer", fontWeight: 700 };
+export const greenButton = { background: "linear-gradient(135deg, #4CAF50, #388E3C)", color: "#FFFFFF", border: "none", borderRadius: 12, padding: "10px 18px", cursor: "pointer", fontWeight: 800, boxShadow: "0 4px 14px rgba(76,175,80,0.28)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 };
 
 export function BannerSlider({ items = banners }) {
   const [active, setActive] = useState(0);
@@ -19,15 +20,18 @@ export function BannerSlider({ items = banners }) {
   }, [items.length]);
   const banner = items[active];
   return <section style={{ position: "relative", height: isMobile ? 260 : 430, overflow: "hidden", background: "#101810", display: "flex", alignItems: "center", padding: isMobile ? "24px 16px" : "80px 40px" }}>
-    <img src={banner.image} alt={banner.headline} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.48 }} />
-    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(12,31,13,0.88), rgba(12,31,13,0.48), rgba(12,31,13,0.20))" }} />
+    <img src={banner.image} alt={banner.headline} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    <div style={{
+      position: "absolute",
+      inset: 0,
+      background: isMobile
+        ? "linear-gradient(90deg, rgba(7, 10, 7, 0.82) 0%, rgba(7, 10, 7, 0.58) 62%, rgba(7, 10, 7, 0.22) 100%)"
+        : "linear-gradient(90deg, rgba(7, 10, 7, 0.78) 0%, rgba(7, 10, 7, 0.56) 42%, rgba(7, 10, 7, 0.22) 72%, rgba(7, 10, 7, 0.06) 100%)",
+    }} />
     <div style={{ position: "relative", maxWidth: 1180, margin: "0 auto", width: "100%" }}>
-      <h1 style={{ color: "#FFFFFF", fontSize: isMobile ? 32 : 60, margin: 0, fontWeight: 900, maxWidth: 720 }}>{banner.headline}</h1>
-      <p style={{ color: "#F1F8F1", fontSize: isMobile ? 15 : 21, margin: "12px 0 24px", maxWidth: 560 }}>{banner.subheadline}</p>
+      <h1 style={{ color: "#ffffff", fontSize: isMobile ? 32 : 60, margin: 0, fontWeight: 900, maxWidth: 720 }}>{banner.headline}</h1>
+      <p style={{ color: "#ffffff", fontSize: isMobile ? 15 : 21, margin: "12px 0 24px", maxWidth: 560, fontWeight: 700 }}>{banner.subheadline}</p>
       <Link to={banner.route} style={{ background: colors.green, color: "#FFFFFF", padding: "12px 22px", borderRadius: 8, textDecoration: "none", fontWeight: 800 }}>{banner.cta}</Link>
-    </div>
-    <div style={{ position: "absolute", bottom: 18, left: 0, right: 0, display: "flex", justifyContent: "center", gap: 8 }}>
-      {items.map((item, index) => <button key={item.id} onClick={() => setActive(index)} aria-label={`Go to banner ${index + 1}`} style={{ width: active === index ? 24 : 10, height: 10, borderRadius: 10, border: "none", background: active === index ? colors.green : "rgba(255,255,255,0.75)", cursor: "pointer" }} />)}
     </div>
   </section>;
 }
@@ -49,6 +53,8 @@ export function CategoryImageSection({ title = "Categories", items, titleInCard 
 export function ProductCard({ product, compact = false }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+  const isSpice = product.category === "spices";
   return <div onClick={() => navigate(`/product/${product.id}`)} className={compact ? "product-card product-card--compact" : "product-card"} style={{ minWidth: compact ? 200 : 0, flexShrink: 0 }}>
     <div className="product-card__media">
       <img src={product.image} alt={product.name} />
@@ -59,9 +65,14 @@ export function ProductCard({ product, compact = false }) {
       <p className="product-description" style={{ color: "#6B7280", fontSize: 13, lineHeight: 1.4, margin: "0 0 10px" }}>{product.description || "Premium quality product"}</p>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginTop: "auto" }}>
         <strong style={{ color: colors.dark }}>₹{product.price}</strong>
-        <button onClick={(event) => { event.stopPropagation(); addItem({ key: product.id, productId: product.id, name: product.name, price: product.price, image: product.image }); }} style={greenButton}>Add</button>
+        {isSpice ? null : <button className="standard-add-btn" onClick={(event) => { event.stopPropagation(); addItem({ key: product.id, productId: product.id, name: product.name, price: product.price, image: product.image }); }} style={greenButton}><ShoppingCart size={15} /> Add</button>}
       </div>
+      {isSpice && <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+        <button onClick={(event) => { event.stopPropagation(); setShowEnquiryModal(true); }} onMouseEnter={(e) => (e.currentTarget.style.background = "#F1F8F1")} onMouseLeave={(e) => (e.currentTarget.style.background = "#FFFFFF")} style={enquiryButtonStyle}>📩 Enquiry</button>
+        <button className="standard-add-btn" onClick={(event) => { event.stopPropagation(); addItem({ key: product.id, productId: product.id, name: product.name, price: product.price, image: product.image }); }} style={{ ...greenButton, flex: 1, fontSize: "13px" }}><ShoppingCart size={15} /> Add to Cart</button>
+      </div>}
     </div>
+    {showEnquiryModal && <EnquiryModal product={product} onClose={() => setShowEnquiryModal(false)} />}
   </div>;
 }
 
@@ -73,6 +84,92 @@ export function ProductGridSection({ title = "Popular Products", items }) {
     <div style={{ display: "grid", gridTemplateColumns: columns, gap: 18, alignItems: "stretch" }}>{items.map((product) => <ProductCard key={product.id} product={product} />)}</div>
   </section>;
 }
+
+function EnquiryModal({ product, onClose }) {
+  const [enquiryForm, setEnquiryForm] = useState({ name: "", email: "", phone: "", address: "", quantity: "", unit: "grams (g)", message: "" });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, []);
+
+  const resetAndClose = () => {
+    setEnquiryForm({ name: "", email: "", phone: "", address: "", quantity: "", unit: "grams (g)", message: "" });
+    setErrors({});
+    setSuccess(false);
+    onClose();
+  };
+
+  const submit = () => {
+    const nextErrors = {};
+    ["name", "email", "phone", "address", "quantity"].forEach((field) => {
+      if (!enquiryForm[field]) nextErrors[field] = "This field is required";
+    });
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length) return;
+    setLoading(true);
+    setTimeout(() => {
+      console.log("Enquiry submitted:", { spice: product.name, ...enquiryForm });
+      setLoading(false);
+      setSuccess(true);
+      setTimeout(resetAndClose, 3000);
+    }, 350);
+  };
+
+  return createPortal(<div onClick={(event) => { event.stopPropagation(); resetAndClose(); }} style={modalOverlayStyle}>
+    <div style={modalCenterWrap}>
+    <div onClick={(event) => event.stopPropagation()} style={{ ...modalCardStyle, maxWidth: "520px" }}>
+      <div style={modalHeaderStyle}>
+        <div><h2 style={modalTitleStyle}>Product Enquiry</h2><p style={{ margin: "4px 0 0", color: "rgba(255,255,255,0.8)", fontSize: 13 }}>{product.name}</p></div>
+        <button onClick={resetAndClose} style={modalCloseStyle}>×</button>
+      </div>
+      {success ? <div style={{ padding: "36px 28px", textAlign: "center" }}>
+        <div style={{ width: 60, height: 60, borderRadius: "50%", background: "#4CAF50", color: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, fontWeight: 900, margin: "0 auto 18px" }}>✓</div>
+        <h3 style={{ color: "#1A2E1A", fontSize: 24, fontWeight: 800, margin: "0 0 10px" }}>Enquiry Submitted!</h3>
+        <p style={{ color: "#1A1A1A", lineHeight: 1.5 }}>We'll contact you within 24 hours regarding your enquiry for {product.name}.</p>
+        <button onClick={resetAndClose} style={{ ...outlineModalButton, marginTop: 20 }}>Close</button>
+      </div> : <>
+        <div style={{ padding: "28px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", background: "#F1F8F1", padding: "12px 16px", borderRadius: "12px", marginBottom: "24px" }}>
+            <img src={product.image} alt={product.name} style={{ width: 48, height: 48, borderRadius: 8, objectFit: "cover" }} />
+            <div><div style={{ fontWeight: 800, fontSize: 15, color: "#1A2E1A" }}>{product.name}</div><div style={{ color: "#4CAF50", fontSize: 14, fontWeight: 700 }}>₹{product.price}</div></div>
+          </div>
+          <ModalField label="Full Name *" error={errors.name}><input placeholder="Your full name" value={enquiryForm.name} onChange={(e) => setEnquiryForm({ ...enquiryForm, name: e.target.value })} style={modalInputStyle} onFocus={focusGreen} onBlur={blurGreen} /></ModalField>
+          <ModalField label="Email Address *" error={errors.email}><input type="email" placeholder="your@email.com" value={enquiryForm.email} onChange={(e) => setEnquiryForm({ ...enquiryForm, email: e.target.value })} style={modalInputStyle} onFocus={focusGreen} onBlur={blurGreen} /></ModalField>
+          <ModalField label="Phone Number *" error={errors.phone}><input type="tel" maxLength={13} placeholder="+91 XXXXX XXXXX" value={enquiryForm.phone} onChange={(e) => setEnquiryForm({ ...enquiryForm, phone: e.target.value })} style={modalInputStyle} onFocus={focusGreen} onBlur={blurGreen} /></ModalField>
+          <ModalField label="Delivery Address *" error={errors.address}><textarea placeholder="Full delivery address" value={enquiryForm.address} onChange={(e) => setEnquiryForm({ ...enquiryForm, address: e.target.value })} style={{ ...modalInputStyle, minHeight: 70, resize: "vertical" }} onFocus={focusGreen} onBlur={blurGreen} /></ModalField>
+          <ModalField label="Quantity Required *" error={errors.quantity}><div style={{ display: "flex", gap: 12 }}><input type="number" placeholder="e.g. 5" value={enquiryForm.quantity} onChange={(e) => setEnquiryForm({ ...enquiryForm, quantity: e.target.value })} style={{ ...modalInputStyle, flex: 1 }} onFocus={focusGreen} onBlur={blurGreen} /><select value={enquiryForm.unit} onChange={(e) => setEnquiryForm({ ...enquiryForm, unit: e.target.value })} style={{ ...modalInputStyle, flex: 1 }} onFocus={focusGreen} onBlur={blurGreen}><option>grams (g)</option><option>Kilograms (kg)</option><option>Pieces</option><option>Packets</option></select></div></ModalField>
+          <ModalField label="Additional Message"><textarea placeholder="Any special requirements, custom blend requests, packaging needs..." value={enquiryForm.message} onChange={(e) => setEnquiryForm({ ...enquiryForm, message: e.target.value })} style={{ ...modalInputStyle, minHeight: 80, resize: "vertical" }} onFocus={focusGreen} onBlur={blurGreen} /></ModalField>
+        </div>
+        <div style={{ padding: "16px 28px 24px", display: "flex", gap: 12, justifyContent: "flex-end" }}><button onClick={resetAndClose} style={outlineModalButton}>Cancel</button><button disabled={loading} onClick={submit} style={{ ...primaryModalButton, opacity: loading ? 0.7 : 1 }}>{loading ? "Submitting..." : "📩 Submit Enquiry"}</button></div>
+      </>}
+    </div>
+    </div>
+  </div>, document.body);
+}
+
+function ModalField({ label, error, children }) {
+  return <div style={{ marginBottom: 18 }}><label style={{ color: "#1A2E1A", fontSize: 14, fontWeight: 600, marginBottom: 6, display: "block" }}>{label}</label>{children}{error && <p style={{ color: "#EF4444", fontSize: 12, fontWeight: 700, margin: "6px 0 0" }}>{error}</p>}</div>;
+}
+
+const enquiryButtonStyle = { background: "#FFFFFF", color: "#4CAF50", border: "2px solid #4CAF50", padding: "10px 18px", borderRadius: "12px", fontSize: "13px", fontWeight: "700", cursor: "pointer", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" };
+const modalOverlayStyle = { position: "fixed", inset: 0, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", zIndex: 2147483647, padding: "16px", animation: "fadeIn 0.2s ease", overflowY: "auto" };
+const modalCenterWrap = { minHeight: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 0" };
+const modalCardStyle = { background: "#FFFFFF", borderRadius: "24px", width: "min(520px, calc(100vw - 32px))", maxHeight: "calc(100vh - 48px)", overflowY: "auto", scrollbarWidth: "none", msOverflowStyle: "none", boxShadow: "0 24px 80px rgba(0,0,0,0.18)", animation: "slideUp 0.3s ease", position: "relative", zIndex: 1 };
+const modalHeaderStyle = { background: "linear-gradient(135deg, #4CAF50, #388E3C)", padding: "22px 28px", borderRadius: "24px 24px 0 0", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 1 };
+const modalTitleStyle = { color: "#FFFFFF", fontSize: "20px", fontWeight: "700", fontFamily: "'Plus Jakarta Sans', sans-serif", margin: 0 };
+const modalCloseStyle = { background: "rgba(255,255,255,0.2)", border: "none", color: "#FFFFFF", width: "36px", height: "36px", borderRadius: "50%", fontSize: "20px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", lineHeight: 1 };
+const modalInputStyle = { width: "100%", padding: "12px 16px", borderRadius: "12px", border: "2px solid #E8F5E9", fontSize: "15px", color: "#1A1A1A", outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif", background: "#FFFFFF" };
+const outlineModalButton = { background: "#FFFFFF", color: "#4CAF50", border: "2px solid #4CAF50", padding: "11px 28px", borderRadius: "12px", fontSize: "14px", fontWeight: "600", cursor: "pointer" };
+const primaryModalButton = { background: "linear-gradient(135deg, #4CAF50, #388E3C)", color: "#FFFFFF", border: "none", padding: "13px 32px", borderRadius: "12px", fontSize: "15px", fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 16px rgba(76,175,80,0.35)" };
+function focusGreen(event) { event.target.style.borderColor = "#4CAF50"; }
+function blurGreen(event) { event.target.style.borderColor = "#E8F5E9"; }
 
 export function AutoScrollProducts({ items }) {
   const { width } = useWindowSize();

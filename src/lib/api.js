@@ -61,6 +61,9 @@ export const usersAPI = {
 export const deliveryAPI = {
   // Get all delivery partners (admin)
   getAllPartners: (params = {}) => apiGet('/delivery-partners', { params }),
+
+  // Create delivery partner (admin)
+  createPartner: (partnerData) => apiPost('/delivery-partners', partnerData),
   
   // Get partner by ID
   getPartnerById: (partnerId) => apiGet(`/delivery-partners/${partnerId}`),

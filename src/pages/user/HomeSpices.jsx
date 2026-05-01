@@ -1,10 +1,11 @@
 ﻿import { BannerSlider, CategoryImageSection, ProductCard, ProductGridSection, buildCategoryItems, colors, heading } from "./HomeSections";
 import { products } from "../../data";
 import { useWindowSize } from "../../hooks/useWindowSize";
+import homeBanner2 from "../../assets/homebanner2.jpg.jpeg";
 
 const spiceBanners = [
   { id: 1, headline: "Authentic Spices from the Farm", subheadline: "Fresh, fragrant and carefully sourced", cta: "Shop Spices", route: "/spices", image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=1600&auto=format&fit=crop" },
-  { id: 2, headline: "Bulk Spice Orders", subheadline: "Restaurant-ready quality and pricing", cta: "Bulk Order", route: "/spices", image: "https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=1600&auto=format&fit=crop" },
+  { id: 2, headline: "Bulk Spice Orders", subheadline: "Restaurant-ready quality and pricing", cta: "Bulk Order", route: "/spices", image: homeBanner2 },
   { id: 3, headline: "Pure Organic Blends", subheadline: "No shortcuts, just real aroma", cta: "Explore", route: "/spices", image: "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?w=1600&auto=format&fit=crop" }
 ];
 

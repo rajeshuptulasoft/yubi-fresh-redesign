@@ -1,3 +1,7 @@
+import homeBanner from "../assets/homebanner.jpg.jpeg";
+import homeBanner2 from "../assets/homebanner2.jpg.jpeg";
+import homeBanner3 from "../assets/homebanner3.jpg.jpeg";
+
 export const banners = [
   {
     id: 1,
@@ -5,7 +9,7 @@ export const banners = [
     subheadline: "Order from our kitchen, delivered in 30 minutes",
     cta: "Order Food Now",
     route: "/home/food",
-    image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1600&auto=format&fit=crop",
+    image: homeBanner,
   },
   {
     id: 2,
@@ -21,7 +25,7 @@ export const banners = [
     subheadline: "Build a richer kitchen in one easy checkout",
     cta: "Explore Combo",
     route: "/home",
-    image: "https://images.unsplash.com/photo-1543353071-873f17a7a088?w=1600&auto=format&fit=crop",
+    image: homeBanner3,
   },
   {
     id: 4,
@@ -29,6 +33,6 @@ export const banners = [
     subheadline: "Vegetables, fruits and dairy at your doorstep",
     cta: "Shop Grocery",
     route: "/grocery",
-    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1600&auto=format&fit=crop",
+    image: homeBanner2,
   },
 ];

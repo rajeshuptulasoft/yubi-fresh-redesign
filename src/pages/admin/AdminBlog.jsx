@@ -37,7 +37,7 @@ export default function AdminBlog(){
 
   return <div>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-      <h1 style={title}>Blog Management</h1>
+      <h1 style={{...title, fontFamily: "'Plus Jakarta Sans', 'DM Sans', sans-serif"}}>Blog Management</h1>
       <button onClick={() => setOpen(true)} style={{ width: 44, height: 44, borderRadius: 12, background: "#4CAF50", color: "#FFFFFF", display: "grid", placeItems: "center", fontWeight: 900 }}>
         <Plus size={22} />
       </button>
